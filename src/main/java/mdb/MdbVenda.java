@@ -8,8 +8,8 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
-@MessageDriven(name = "MdbLog ", activationConfig = {
-	@ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "topic/MdbLog "),
+@MessageDriven(name = "MdbVenda", activationConfig = {
+	@ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "topic/MdbVenda "),
 	@ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
 	@ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "Auto-acknowledge") })
 
