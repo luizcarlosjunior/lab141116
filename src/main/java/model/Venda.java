@@ -1,9 +1,10 @@
 package model;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-public class Venda {
+public class Venda implements Serializable{
 
 	int id;
 	Date data;
@@ -79,4 +80,11 @@ public class Venda {
 		this.status = status;
 	}
 
+	public List<String> getItens() {
+		return itens;
+	}
+
+	public void setItens(List<String> itens) {
+		this.itens = itens;
+	}
 }

@@ -6,10 +6,13 @@ import javax.ejb.MessageDriven;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
+import javax.jms.ObjectMessage;
 import javax.jms.TextMessage;
 
+import model.Venda;
+
 @MessageDriven(name = "MdbContabilidade", activationConfig = {
-	@ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "topic/MdbContabilidade"),
+	@ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "topic/venda"),
 	@ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
 	@ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "Auto-acknowledge") })
 
@@ -18,11 +21,11 @@ public class MdbContabilidade implements MessageListener {
     private final static Logger LOGGER = Logger.getLogger(MdbContabilidade.class.toString());
 
     public void onMessage(Message rcvMessage) {
-        TextMessage msg = null;
+    	ObjectMessage obj = (ObjectMessage) rcvMessage;
         try {
             if (rcvMessage instanceof TextMessage) {
-                msg = (TextMessage) rcvMessage;
-                LOGGER.info(MdbContabilidade.class.toString() + " - Recebi: " + msg.getText());
+                Venda venda = (Venda) obj.getObject();
+                LOGGER.info(MdbContabilidade.class.toString() + " - Recebi a venda: #" + venda.getId());
             } else {
                 LOGGER.warning("Mensagem do tipo errado: " + rcvMessage.getClass().getName());
             }
