@@ -1,6 +1,4 @@
 package mdb;
-
-import java.util.logging.Logger;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
 import javax.jms.JMSException;
@@ -9,6 +7,10 @@ import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 import javax.jms.TextMessage;
 
+import org.hibernate.Session;
+
+import persistencia.HibernateUtil;
+import model.Log;
 import model.Venda;
 
 @MessageDriven(name = "MdbVenda", activationConfig = {
@@ -18,9 +20,11 @@ import model.Venda;
 
 public class MdbVenda implements MessageListener {
 
-    private final static Logger LOGGER = Logger.getLogger(MdbVenda.class.toString());
-
     public void onMessage(Message rcvMessage) {
+
+    	Session session = HibernateUtil.getSessionFactory().openSession();
+		session.beginTransaction();
+
 
     	ObjectMessage obj = (ObjectMessage) rcvMessage;
 
@@ -28,10 +32,17 @@ public class MdbVenda implements MessageListener {
             if (rcvMessage instanceof TextMessage) {
 
             	Venda venda = (Venda) obj.getObject();
-                LOGGER.info(MdbVenda.class.toString() + " - Recebi a venda: #" + venda.getId());
+
+            	//registrar o log
+                Log log = new Log(MdbVenda.class.toString(), "Recebi a venda: #" + venda.getId());
+                session.persist(log);
 
             } else {
-                LOGGER.warning("problema: " + rcvMessage.getClass().getName());
+
+            	//registrar o log
+            	Log log = new Log(MdbVenda.class.toString(), "ERRO ao receber a venda [" + rcvMessage.getClass().getName() + "]");
+                session.persist(log);
+
             }
         } catch (JMSException e) {
             throw new RuntimeException(e);

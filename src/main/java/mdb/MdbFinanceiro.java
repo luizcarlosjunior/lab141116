@@ -1,6 +1,5 @@
 package mdb;
 
-import java.util.logging.Logger;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
 import javax.jms.JMSException;
@@ -9,7 +8,11 @@ import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 import javax.jms.TextMessage;
 
+import org.hibernate.Session;
+
+import model.Log;
 import model.Venda;
+import persistencia.HibernateUtil;
 
 @MessageDriven(name = "MdbFinanceiro", activationConfig = {
 	@ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "topic/venda"),
@@ -18,16 +21,25 @@ import model.Venda;
 
 public class MdbFinanceiro implements MessageListener {
 
-    private final static Logger LOGGER = Logger.getLogger(MdbFinanceiro.class.toString());
 
     public void onMessage(Message rcvMessage) {
+
+    	Session session = HibernateUtil.getSessionFactory().openSession();
+    	session.beginTransaction();
+
     	ObjectMessage obj = (ObjectMessage) rcvMessage;
         try {
             if (rcvMessage instanceof TextMessage) {
             	Venda venda = (Venda) obj.getObject();
-                LOGGER.info(MdbFinanceiro.class.toString() + " - Recebi a venda: " + venda.getId());
+
+            	//registrar o log
+                Log log = new Log(MdbFinanceiro.class.toString(), "Recebi a venda: #" + venda.getId());
+                session.persist(log);
+
             } else {
-                LOGGER.warning("Mensagem do tipo errado: " + rcvMessage.getClass().getName());
+            	//registrar o log
+                Log log = new Log(MdbFinanceiro.class.toString(), "Não recebi a venda!");
+                session.persist(log);
             }
         } catch (JMSException e) {
             throw new RuntimeException(e);

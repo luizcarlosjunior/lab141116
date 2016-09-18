@@ -1,6 +1,5 @@
 package mdb;
 
-import java.util.logging.Logger;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
 import javax.jms.JMSException;
@@ -9,7 +8,11 @@ import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 import javax.jms.TextMessage;
 
+import org.hibernate.Session;
+
 import model.Entrega;
+import model.Log;
+import persistencia.HibernateUtil;
 
 @MessageDriven(name = "MdbLogistica", activationConfig = {
 	@ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "queue/pedido"),
@@ -20,9 +23,10 @@ import model.Entrega;
 
 public class MdbLogistica implements MessageListener {
 
-    private final static Logger LOGGER = Logger.getLogger(MdbLogistica.class.toString());
-
     public void onMessage(Message rcvMessage) {
+
+    	Session session = HibernateUtil.getSessionFactory().openSession();
+		session.beginTransaction();
 
     	ObjectMessage obj = (ObjectMessage) rcvMessage;
 
@@ -31,13 +35,20 @@ public class MdbLogistica implements MessageListener {
 
             	Entrega entrega = (Entrega) obj.getObject();
 
-                LOGGER.info(MdbLogistica.class.toString() + " - Recebi a entrega: #" + entrega.getId());
+            	//registrar o log
+                Log log = new Log(MdbLogistica.class.toString(), "Recebi a entrega: #" + entrega.getId());
+                session.persist(log);
 
             	Thread.sleep(30*1000); // tira um cochilo
 
-                LOGGER.info("a entrega foi despachada.");
+            	//registrar o log
+                Log log2 = new Log(MdbLogistica.class.toString(), "Entrega: #" + entrega.getId() + " enviada");
+                session.persist(log2);
+
             } else {
-                LOGGER.warning("Mensagem do tipo errado: " + rcvMessage.getClass().getName());
+            	//registrar o log
+                Log log = new Log(MdbLogistica.class.toString(), "Mensagem do tipo errado:  [" + rcvMessage.getClass().getName() + "]");
+                session.persist(log);
             }
         } catch (JMSException e) {
             throw new RuntimeException(e);
