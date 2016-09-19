@@ -38,7 +38,7 @@ public class MdbLog implements MessageListener {
 
             } else {
             	//registrar o log
-                Log log = new Log(MdbLog.class.toString(), "Não recebi a entrega!");
+                Log log = new Log(MdbLog.class.toString(), "Não recebi a entrega [" + rcvMessage.getClass().getName() + "]");
                 session.persist(log);
             }
         } catch (JMSException e) {

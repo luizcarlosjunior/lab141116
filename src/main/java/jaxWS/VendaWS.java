@@ -1,7 +1,5 @@
 package jaxWS;
 
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -9,9 +7,6 @@ import javax.ejb.EJB;
 import javax.jws.WebMethod;
 import javax.jws.WebResult;
 import javax.jws.WebService;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import ejb.ProcessVenda;
 import model.Venda;
 
@@ -21,10 +16,9 @@ public class VendaWS{
 	@EJB
 	ProcessVenda EJB_ProcessVenda;
 
-	@WebMethod(operationName="venda")
+	@WebMethod(operationName="VendaWS")
 	@WebResult(name="resultado")
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
+	public String doGet(){
 		// itens
 		List<String> itens = Arrays.asList("item 1", "item 2", "item 3");
 
@@ -42,27 +36,7 @@ public class VendaWS{
 
 		// envia o objeto
 		EJB_ProcessVenda.processarVenda(venda);
-
-		// gera o html para exibir na tela
-		resp.setContentType("text/html");
-	    PrintWriter out = resp.getWriter();
-	    // html --write
-	    out.write("<html>");
-	    // header com o title
-	    out.write("<head><title>Venda Servlet</title></head>");
-	    // mensagem de título
-	    out.write("<h1>Olá você está na rota /venda</h1>");
-	    // imprime o objeto venda
-   	    out.write("<p>Cliente: " + venda.getCliente_nome() +"</p>");
-        out.write("<p>CPF: " + venda.getCliente_cpf() +"</p>");
-        out.write("<p>Endereço: " + venda.getCliente_endereco() +"</p>");
-        out.write("</ br>");
-        out.write("<p><strong>: " + venda.getQtd_itens() +" itens (R$ "+ venda.getValor() +")</strong></p>");
-        for (int i = 0; i < venda.getQtd_itens(); i++) {
-        	out.write("<p>: " + venda.getItens().get(i) +"</p>");
-        }
-	    out.write("</html>");
-
+		return "ok!";
     }
 
 }

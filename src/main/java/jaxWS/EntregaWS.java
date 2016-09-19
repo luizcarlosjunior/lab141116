@@ -1,7 +1,5 @@
 package jaxWS;
 
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -9,8 +7,6 @@ import javax.ejb.EJB;
 import javax.jws.WebMethod;
 import javax.jws.WebResult;
 import javax.jws.WebService;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import ejb.ProcessEntrega;
 import model.Entrega;
@@ -22,11 +18,9 @@ public class EntregaWS{
 	@EJB
 	ProcessEntrega EJB_ProcessEntrega;
 
-	@WebMethod(operationName="entregar")
+	@WebMethod(operationName="EntregaWS")
 	@WebResult(name="resultado")
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-
-		// venda fake :P
+	public String doGet(){
 
 		// itens
 		List<String> itens = Arrays.asList("item 1", "item 2", "item 3");
@@ -53,10 +47,7 @@ public class EntregaWS{
 		//enviar para o EJB
 		EJB_ProcessEntrega.processarEntrega(entrega);
 
-		resp.setContentType("text/html");
-	    PrintWriter out = resp.getWriter();
-	    out.write("<h1>Olá você está na rota /entrega</h1>");
-	    out.write("<h2>A venda número '#" + entrega.getId() + "' do Cliente '" + entrega.getVenda().getCliente_nome() + "' foi enviada.</h2>");
+		return "ok!";
     }
 
 }
