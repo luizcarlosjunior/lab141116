@@ -20,17 +20,17 @@ public class TestaProduto {
 		System.out.println(criar_retorno);
 
 		// atualiza o produto
-		String atualiza_retorno = port.produtoWSAtualizar((Long) 1, "Produto 1 - atualizado", "3216516516654", new BigDecimal("199"));
+		String atualiza_retorno = port.produtoWSAtualizar((long) 1, "Produto 1 - atualizado", "3216516516654", new BigDecimal("199"));
 		// retorno
 		System.out.println(atualiza_retorno);
 
 		//le o produto
-		String ler_retorno = port.produtoWSLer((Long) 1);
+		String ler_retorno = port.produtoWSLer((long) 1);
 		// retorno
 		System.out.println(ler_retorno);
 
 		//apaga o produto
-		String apagar_retorno = port.produtoWSApagar((Long) 1);
+		String apagar_retorno = port.produtoWSApagar((long) 1);
 		// retorno
 		System.out.println(apagar_retorno);
 	}
