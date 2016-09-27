@@ -2,6 +2,8 @@ package mdb;
 
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
+import javax.ejb.TransactionManagement;
+import javax.ejb.TransactionManagementType;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
@@ -18,7 +20,7 @@ import persistencia.HibernateUtil;
 	@ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "topic/venda"),
 	@ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
 	@ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "Auto-acknowledge") })
-
+@TransactionManagement(TransactionManagementType.BEAN)
 public class MdbAuditoria implements MessageListener {
 
     public void onMessage(Message rcvMessage) {
@@ -44,6 +46,9 @@ public class MdbAuditoria implements MessageListener {
         } catch (JMSException e) {
             throw new RuntimeException(e);
         }
+
+		session.getTransaction().commit();
+		session.close();
     }
 
 }
